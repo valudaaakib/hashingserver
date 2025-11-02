@@ -1,6 +1,6 @@
 import express from "express";
 import crypto from "crypto";
-import ngrok from "ngrok";
+
 import db from "./db_con.js";
 
 const app = express();
@@ -56,14 +56,28 @@ app.post("/register", (req, res) => {
     address,
     gst_no,
     tin_no,
-    pin_code,
+    pincode,
     dealer_id,
     license_key,
     installation_code,
   } = req.body;
 
+  //   {
+  //     "restro_name": "Hotel Name",
+  //     "email": "test@gmail.com",
+  //     "contact": "9999999999",
+  //     "alt_contact":"0274202742",
+  //     "address": "Hotel address",
+  //     "gst_no": "optional" ,
+  //     "tin_no": "optional",
+  //     "pin_code": "optional",
+  //     "license_key":"That we shared for each installation",
+  //     "installation_code" : "Created with serial numbers",
+  //     "dealer_id":"For refferal or agent credit"
+  // }
+
   const query =
-    "INSERT INTO restro_reg (restro_name, email, contact, alt_contact, address, gst_no, tin_no, pin_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO restro_reg (restro_name, email, contact, alt_contact, address, gst_no, tin_no, pincode) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
   const values = [
     restro_name,
     email,
@@ -72,18 +86,18 @@ app.post("/register", (req, res) => {
     address,
     gst_no,
     tin_no,
-    pin_code,
+    pincode,
   ];
 
-  // db.query(query, values, (err, result) => {
-  //   if (err) {
-  //     console.error("Error registering restro:", err);
-  //     res.status(500).json({ error: "Error registering restro" });
-  //   } else {
-  //     console.log("Restro registered successfully", result);
-  //     res.status(200).json({ message: "Restro registered successfully" });
-  //   }
-  // });
+  db.query(query, values, (err, result) => {
+    if (err) {
+      console.error("Error registering restro:", err);
+      res.status(500).json({ error: "Error registering restro" });
+    } else {
+      console.log("Restro registered successfully", result);
+      res.status(200).json({ message: "Restro registered successfully" });
+    }
+  });
 });
 
 db.query("select * from restro_reg", (err, result) => {
@@ -95,8 +109,6 @@ db.query("select * from restro_reg", (err, result) => {
 });
 
 app.listen(4000, () => {
-  const url = ngrok.connect(4040);
-  console.log("Server started on ");
   if (db) {
     console.log("Server started on port 3000");
   }
